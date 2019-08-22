@@ -8,10 +8,10 @@ FILENAME=ironic-python-agent
 FILENAME_EXT=.tar
 FFILENAME=$FILENAME$FILENAME_EXT
 
-TMPDIR=$(mktemp -d)
-
-mkdir -p /shared/html/images
+mkdir -p /shared/html/images /shared/tmp
 cd /shared/html/images
+
+TMPDIR=$(mktemp -d -p /shared/tmp)
 
 # If we have a CACHEURL and nothing has yet been downloaded
 # get header info from the cache
