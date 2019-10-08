@@ -2,7 +2,7 @@
 #CACHEURL=http://172.22.0.1/images
 
 # Which image should we use
-SNAP=${1:-current-tripleo-rdo}
+SNAP=${1:-current-tripleo}
 
 FILENAME=ironic-python-agent
 FILENAME_EXT=.tar
