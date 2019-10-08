@@ -24,7 +24,7 @@ fi
 if [ -e $FFILENAME.headers ] ; then
     ETAG=$(awk '/ETag:/ {print $2}' $FFILENAME.headers | tr -d "\r")
     cd $TMPDIR
-    curl --verbose --dump-header $FFILENAME.headers -O https://images.rdoproject.org/stein/rdo_trunk/$SNAP/$FFILENAME --header "If-None-Match: $ETAG"
+    curl --verbose --dump-header $FFILENAME.headers -O https://images.rdoproject.org/train/rdo_trunk/$SNAP/$FFILENAME --header "If-None-Match: $ETAG"
     # curl didn't download anything because we have the ETag already
     # but we don't have it in the images directory
     # Its in the cache, go get it
@@ -35,7 +35,7 @@ if [ -e $FFILENAME.headers ] ; then
     fi
 else
     cd $TMPDIR
-    curl --verbose --dump-header $FFILENAME.headers -O https://images.rdoproject.org/stein/rdo_trunk/$SNAP/$FFILENAME
+    curl --verbose --dump-header $FFILENAME.headers -O https://images.rdoproject.org/train/rdo_trunk/$SNAP/$FFILENAME
 fi
 
 if [ -s $FFILENAME ] ; then
