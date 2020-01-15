@@ -1,8 +1,7 @@
-FROM docker.io/centos:centos7
+FROM docker.io/centos:centos8
 
-RUN yum update -y \
- && yum clean all
+RUN dnf update -y && \
+    dnf clean all && \
+    rm -rf /var/cache/{yum,dnf}/*
 
 COPY ./get-resource.sh /usr/local/bin/get-resource.sh
-
-
