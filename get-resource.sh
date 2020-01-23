@@ -1,6 +1,10 @@
 #!/bin/bash -xe
 #CACHEURL=http://172.22.0.1/images
 
+# Check and set http(s)_proxy. Required for cURL to use a proxy
+export http_proxy=${http_proxy:-$HTTP_PROXY}
+export https_proxy=${https_proxy:-$HTTPS_PROXY}
+
 # Which image should we use
 SNAP=${1:-current-tripleo}
 IPA_BASEURI=${IPA_BASEURI:-https://images.rdoproject.org/train/rdo_trunk/$SNAP/}
