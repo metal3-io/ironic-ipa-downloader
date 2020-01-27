@@ -29,7 +29,7 @@ fi
 if [ -e $FFILENAME.headers ] ; then
     ETAG=$(awk '/ETag:/ {print $2}' $FFILENAME.headers | tr -d "\r")
     cd $TMPDIR
-    curl -g --verbose --dump-header $FFILENAME.headers -O $IPA_BASEURI/$FFILENAME --header "If-None-Match: $ETAG"
+    curl -g --verbose --dump-header $FFILENAME.headers -O $IPA_BASEURI/$FFILENAME --header "If-None-Match: $ETAG" || cp /shared/html/images/$FFILENAME.headers .
     # curl didn't download anything because we have the ETag already
     # but we don't have it in the images directory
     # Its in the cache, go get it
