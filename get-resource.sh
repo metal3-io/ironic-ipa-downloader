@@ -10,8 +10,8 @@ export no_proxy=${no_proxy:-$NO_PROXY}
 SNAP=${1:-current-tripleo}
 IPA_BASEURI=${IPA_BASEURI:-https://images.rdoproject.org/centos8/master/rdo_trunk/$SNAP/}
 
-FILENAME=ironic-python-agent
-FILENAME_EXT=.tar
+FILENAME=${IPA_FILENAME:-ironic-python-agent}
+FILENAME_EXT=${IPA_FILENAME_EXT:-.tar}
 FFILENAME=$FILENAME$FILENAME_EXT
 
 mkdir -p /shared/html/images /shared/tmp
