@@ -9,6 +9,8 @@ approvers:
 
 reviewers:
  - iurygregory
- - maelk
  - stbenjam
  - zaneb
+
+emeritus_reviewers:
+ - maelk
