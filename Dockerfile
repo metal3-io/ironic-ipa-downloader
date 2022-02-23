@@ -1,6 +1,6 @@
-FROM docker.io/centos:centos8
+FROM quay.io/centos/centos:stream9
 
-RUN dnf update -y && \
+RUN dnf upgrade -y && \
     dnf clean all && \
     rm -rf /var/cache/{yum,dnf}/*
 
