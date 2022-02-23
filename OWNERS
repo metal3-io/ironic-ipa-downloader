@@ -3,8 +3,14 @@
 approvers:
  - bfournie
  - derekhiggins
- - dhellmann
  - dtantsur
+ - elfosardo
  - hardys
- - juliakreger
- - russellb
+ - iurygregory
+
+reviewers:
+ - zaneb
+
+emeritus_reviewers:
+ - maelk
+ - stbenjam
