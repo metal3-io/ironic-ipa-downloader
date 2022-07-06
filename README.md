@@ -10,7 +10,7 @@ environment variable.
 To build custom IPA ramdisk image, follow the steps below. For more information
 check the disk-image builder [document](https://docs.openstack.org/diskimage-builder/latest/developer/index.html#quickstart).
 
-1. Create a virtual environment
+1. Create a virtual environment.
 
     ```shell
     $ virtualenv myenv
