@@ -1,7 +1,7 @@
 # ironic-ipa-downloader
 This repository contains scripts to download the Ironic-Python-Agent (IPA)
 ramdisk images to a shared volume. By default, we pull IPA images from
-https://images.rdoproject.org/centos8/master/rdo_trunk registry. However,
+https://images.rdoproject.org/centos9/master/rdo_trunk registry. However,
 it is possible to override this URI to a custom URI by exporting `IPA_BASEURI`
 environment variable.
 
