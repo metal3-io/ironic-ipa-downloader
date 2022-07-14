@@ -8,7 +8,7 @@ export no_proxy=${no_proxy:-$NO_PROXY}
 
 # Which image should we use
 SNAP=${1:-current-tripleo}
-IPA_BASEURI=${IPA_BASEURI:-https://images.rdoproject.org/centos8/master/rdo_trunk/$SNAP/}
+IPA_BASEURI=${IPA_BASEURI:-https://images.rdoproject.org/centos9/master/rdo_trunk/$SNAP/}
 
 FILENAME=ironic-python-agent
 FILENAME_EXT=.tar
