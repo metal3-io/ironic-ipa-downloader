@@ -5,7 +5,6 @@ approvers:
  - derekhiggins
  - dtantsur
  - elfosardo
- - hardys
  - iurygregory
 
 reviewers:
@@ -14,3 +13,6 @@ reviewers:
 emeritus_reviewers:
  - maelk
  - stbenjam
+
+emeritus_approvers:
+ - hardys
