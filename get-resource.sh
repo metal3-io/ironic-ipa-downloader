@@ -37,7 +37,7 @@ fi
 
 # Download the most recent version of IPA
 if [ -r "${FFILENAME}.headers" ] ; then
-    ETAG="$(awk '/ETag:/ {print $2}' ${FFILENAME}.headers | tr -d "\r")"
+    ETAG="$(awk '/ETag:/ {print $2}' "${FFILENAME}.headers" | tr -d "\r")"
     cd "${TMPDIR}"
     curl -g ${CURL_OUTPUT} --dump-header "${FFILENAME}.headers" \
         -O "${IPA_BASEURI}/${FFILENAME}" \
@@ -46,8 +46,8 @@ if [ -r "${FFILENAME}.headers" ] ; then
     # curl didn't download anything because we have the ETag already
     # but we don't have it in the images directory
     # Its in the cache, go get it
-    ETAG="$(awk '/ETag:/ {print $2}' ${FFILENAME}.headers | tr -d "\"\r")"
-    if [ ! -s ${FFILENAME} ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FFILENAME}" ]; then
+    ETAG="$(awk '/ETag:/ {print $2}' "${FFILENAME}.headers" | tr -d "\"\r")"
+    if [ ! -s "${FFILENAME}" ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FFILENAME}" ]; then
         mv "${SHARED_DIR}/html/images/${FFILENAME}.headers" .
         curl -g ${CURL_OUTPUT} -O "${CACHEURL}/${FILENAME}-${ETAG}/${FFILENAME}"
     fi
