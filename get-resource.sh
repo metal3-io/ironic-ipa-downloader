@@ -1,6 +1,9 @@
 #!/bin/bash
 #CACHEURL=http://172.22.0.1/images
 
+echo >&2 "this is expected to terminate right now"
+exit 1
+
 set -eux
 
 # Check and set http(s)_proxy. Required for cURL to use a proxy
