@@ -16,12 +16,14 @@ if [ "${CURL_VERBOSE:-}" = true ]; then
 fi
 
 # Which image should we use
-SNAP="${1:-current-tripleo}"
-IPA_BASEURI="${IPA_BASEURI:-https://images.rdoproject.org/centos9/master/rdo_trunk/${SNAP}}"
+IPA_BASEURI="${IPA_BASEURI:-https://tarballs.opendev.org/openstack/ironic-python-agent/dib}"
+IPA_BRANCH="$(echo "${IPA_BRANCH:-master}" | tr / -)"
+IPA_FLAVOR="${IPA_FLAVOR:-centos9}"
 
-FILENAME="ironic-python-agent"
-FILENAME_EXT=".tar"
+FILENAME="ipa-${IPA_FLAVOR}-${IPA_BRANCH}"
+FILENAME_EXT=".tar.gz"
 FFILENAME="${FILENAME}${FILENAME_EXT}"
+DESTNAME="ironic-python-agent"
 
 mkdir -p "${SHARED_DIR}"/html/images "${SHARED_DIR}"/tmp
 cd "${SHARED_DIR}"/html/images
@@ -36,8 +38,8 @@ if [ -n "${CACHEURL:-}" ] && [ ! -e "${FFILENAME}.headers" ]; then
 fi
 
 # Download the most recent version of IPA
-if [ -r "${FFILENAME}.headers" ] ; then
-    ETAG="$(awk '/ETag:/ {print $2}' ${FFILENAME}.headers | tr -d "\r")"
+if [ -r "${DESTNAME}.headers" ] ; then
+    ETAG="$(awk '/ETag:/ {print $2}' "${DESTNAME}.headers" | tr -d "\r")"
     cd "${TMPDIR}"
     curl -g ${CURL_OUTPUT} --dump-header "${FFILENAME}.headers" \
         -O "${IPA_BASEURI}/${FFILENAME}" \
@@ -46,8 +48,8 @@ if [ -r "${FFILENAME}.headers" ] ; then
     # curl didn't download anything because we have the ETag already
     # but we don't have it in the images directory
     # Its in the cache, go get it
-    ETAG="$(awk '/ETag:/ {print $2}' ${FFILENAME}.headers | tr -d "\"\r")"
-    if [ ! -s ${FFILENAME} ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FFILENAME}" ]; then
+    ETAG="$(awk '/ETag:/ {print $2}' "${FFILENAME}.headers" | tr -d "\"\r")"
+    if [ ! -s "${FFILENAME}" ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FFILENAME}" ]; then
         mv "${SHARED_DIR}/html/images/${FFILENAME}.headers" .
         curl -g ${CURL_OUTPUT} -O "${CACHEURL}/${FILENAME}-${ETAG}/${FFILENAME}"
     fi
@@ -57,15 +59,15 @@ else
 fi
 
 if [ -s "${FFILENAME}" ]; then
-    tar -xf "${FFILENAME}"
+    tar -xaf "${FFILENAME}"
 
     ETAG="$(awk '/ETag:/ {print $2}' "${FFILENAME}.headers" | tr -d "\"\r")"
     cd -
     chmod 755 "${TMPDIR}"
     mv "${TMPDIR}" "${FILENAME}-${ETAG}"
-    ln -sf "${FILENAME}-${ETAG}/${FFILENAME}.headers" "${FFILENAME}.headers"
-    ln -sf "${FILENAME}-${ETAG}/${FILENAME}.initramfs" "${FILENAME}.initramfs"
-    ln -sf "${FILENAME}-${ETAG}/${FILENAME}.kernel" "${FILENAME}.kernel"
+    ln -sf "${FILENAME}-${ETAG}/${FFILENAME}.headers" "${DESTNAME}.headers"
+    ln -sf "${FILENAME}-${ETAG}/${FILENAME}.initramfs" "${DESTNAME}.initramfs"
+    ln -sf "${FILENAME}-${ETAG}/${FILENAME}.kernel" "${DESTNAME}.kernel"
 else
     rm -rf "${TMPDIR}"
 fi

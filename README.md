@@ -2,9 +2,12 @@
 
 This repository contains scripts to download the Ironic-Python-Agent (IPA)
 ramdisk images to a shared volume. By default, we pull IPA images from
-[RDO trunk](https://images.rdoproject.org/centos9/master/rdo_trunk) registry.
-However, it is possible to override this URI to a custom URI by exporting
-`IPA_BASEURI` environment variable.
+[Ironic upstream](https://tarballs.opendev.org/openstack/ironic-python-agent/dib)
+archive where an image is built on every commit to the *master* git branch.
+
+It is possible to override this URI to a custom URI by exporting the
+`IPA_BASEURI` environment variable. You can also use a *stable branch* by
+exporting `IPA_BRANCH` variable.
 
 ## How to build custom IPA ramdisk image
 
@@ -34,9 +37,8 @@ check the disk-image builder
 
    ```shell
    ironic-python-agent-builder --output ironic-python-agent \
-     --release 8-stream centos \
-     --element='dynamic-login' \
-     --element='extra-hardware' --verbose
+     --release 9-stream centos \
+     --element='dynamic-login'
    ```
 
    - `--release` - Distribution release to use.
@@ -44,9 +46,6 @@ check the disk-image builder
      available [elements](https://docs.openstack.org/diskimage-builder/latest/).
    - `output` - Output base file name
    - `centos` - Base distribution.
-   - [extra-hardware](https://docs.openstack.org/ironic-python-agentbuilder/latest/admin/dib.html#ironic-python-agent-ipa-extra-hardware)
-     DIB element is required to install required utilities for improving
-     introspection.
    - [dynamic-login](https://docs.openstack.org/diskimage-builder/latest/elements/dynamic-login/README.html)
      DIB element allows to inject SSH key in the image.
 
