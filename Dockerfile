@@ -7,3 +7,5 @@ RUN dnf upgrade -y && \
     rm -rf /var/cache/{yum,dnf}/*
 
 COPY ./get-resource.sh /usr/local/bin/get-resource.sh
+
+ENTRYPOINT /usr/local/bin/get-resource.sh
