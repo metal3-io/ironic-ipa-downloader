@@ -10,10 +10,16 @@ export no_proxy="${no_proxy:-${NO_PROXY:-}}"
 
 # configurable variables
 SHARED_DIR="${SHARED_DIR:-/shared}"
-CURL_OUTPUT=""
-if [ "${CURL_VERBOSE:-}" = true ]; then
-    CURL_OUTPUT="--verbose"
-fi
+
+curl_with_flags() {
+    if [ "${CURL_VERBOSE:-}" = true ]; then
+        set -- --verbose "$@"
+    fi
+    if  [ "${CURL_INSECURE:-}" = true ]; then
+        set -- --insecure "$@"
+    fi
+    curl "$@"
+}
 
 # Which image should we use
 IPA_BASEURI="${IPA_BASEURI:-https://tarballs.opendev.org/openstack/ironic-python-agent/dib}"
@@ -34,14 +40,14 @@ TMPDIR="$(mktemp -d -p "${SHARED_DIR}"/tmp)"
 # get header info from the cache
 
 if [ -n "${CACHEURL:-}" ] && [ ! -e "${FFILENAME}.headers" ]; then
-    curl -g ${CURL_OUTPUT} --fail -O "${CACHEURL}/${FFILENAME}.headers" || true
+    curl_with_flags -g --fail -O "${CACHEURL}/${FFILENAME}.headers" || true
 fi
 
 # Download the most recent version of IPA
 if [ -r "${DESTNAME}.headers" ] ; then
     ETAG="$(awk '/ETag:/ {print $2}' "${DESTNAME}.headers" | tr -d "\r")"
     cd "${TMPDIR}"
-    curl -g ${CURL_OUTPUT} --dump-header "${FFILENAME}.headers" \
+    curl_with_flags -g --dump-header "${FFILENAME}.headers" \
         -O "${IPA_BASEURI}/${FFILENAME}" \
         --header "If-None-Match: ${ETAG}" || cp "${SHARED_DIR}/html/images/${FFILENAME}.headers" .
 
@@ -51,11 +57,11 @@ if [ -r "${DESTNAME}.headers" ] ; then
     ETAG="$(awk '/ETag:/ {print $2}' "${FFILENAME}.headers" | tr -d "\"\r")"
     if [ ! -s "${FFILENAME}" ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FFILENAME}" ]; then
         mv "${SHARED_DIR}/html/images/${FFILENAME}.headers" .
-        curl -g ${CURL_OUTPUT} -O "${CACHEURL}/${FILENAME}-${ETAG}/${FFILENAME}"
+        curl_with_flags -g -O "${CACHEURL}/${FILENAME}-${ETAG}/${FFILENAME}"
     fi
 else
     cd "${TMPDIR}"
-    curl -g ${CURL_OUTPUT} --dump-header "${FFILENAME}.headers" -O "${IPA_BASEURI}/${FFILENAME}"
+    curl_with_flags -g --dump-header "${FFILENAME}.headers" -O "${IPA_BASEURI}/${FFILENAME}"
 fi
 
 if [ -s "${FFILENAME}" ]; then
