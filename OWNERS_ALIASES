@@ -1,0 +1,11 @@
+# See the OWNERS docs: https://git.k8s.io/community/contributors/guide/owners.md
+
+aliases:
+  ironic-ipa-downloader-maintainers:
+  - derekhiggins
+  - dtantsur
+  - elfosardo
+  - iurygregory
+
+  ironic-ipa-downloader-reviewers:
+  - zaneb
