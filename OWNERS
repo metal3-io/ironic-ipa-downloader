@@ -1,18 +1,16 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 approvers:
- - derekhiggins
- - dtantsur
- - elfosardo
- - iurygregory
+- ironic-ipa-downloader-maintainers
 
 reviewers:
- - zaneb
+- ironic-ipa-downloader-maintainers
+- ironic-ipa-downloader-reviewers
 
 emeritus_approvers:
- - bfournie
- - hardys
+- bfournie
+- hardys
 
 emeritus_reviewers:
- - maelk
- - stbenjam
+- maelk
+- stbenjam
