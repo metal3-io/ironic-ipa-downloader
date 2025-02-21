@@ -5,9 +5,16 @@ ramdisk images to a shared volume. By default, we pull IPA images from
 [Ironic upstream](https://tarballs.opendev.org/openstack/ironic-python-agent/dib)
 archive where an image is built on every commit to the *master* git branch.
 
-It is possible to override this URI to a custom URI by exporting the
-`IPA_BASEURI` environment variable. You can also use a *stable branch* by
-exporting `IPA_BRANCH` variable.
+## How to set env variables for use
+
+To use a stable branch, export the `IPA_BRANCH` variable when downloading
+from the default URI.
+
+You can override the default URI with a custom one by exporting the `IPA_BASEURI`
+environment variable.
+
+If the archive follows different naming conventions than the default, you can
+override the file names by specifying the `IPA_FILENAME` variable.
 
 ## How to build custom IPA ramdisk image
 
