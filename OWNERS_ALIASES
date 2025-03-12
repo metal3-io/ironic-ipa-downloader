@@ -8,4 +8,7 @@ aliases:
   - iurygregory
 
   ironic-ipa-downloader-reviewers:
+  - lentzi90
+  - Rozzii
+  - tuminoid
   - zaneb
