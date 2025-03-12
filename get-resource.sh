@@ -26,7 +26,7 @@ IPA_BASEURI="${IPA_BASEURI:-https://tarballs.opendev.org/openstack/ironic-python
 IPA_BRANCH="$(echo "${IPA_BRANCH:-master}" | tr / -)"
 IPA_FLAVOR="${IPA_FLAVOR:-centos9}"
 
-FILENAME="${FILENAME:-ipa-${IPA_FLAVOR}-${IPA_BRANCH}.tar.gz}"
+FILENAME="${IPA_FILENAME:-ipa-${IPA_FLAVOR}-${IPA_BRANCH}.tar.gz}"
 FILENAME_NO_EXT="${FILENAME%.*.*}"
 DESTNAME="ironic-python-agent"
 
