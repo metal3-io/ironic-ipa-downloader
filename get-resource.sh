@@ -21,13 +21,27 @@ curl_with_flags() {
     curl "$@"
 }
 
+EXTENSIONS=${EXTENSIONS:-".tar.gz .tar.gz.sha256"}
+
+get_filename_without_extension() {
+	local filename=$1
+	for ex in ${EXTENSIONS}; do
+		bname=$(basename "${filename}" "${ex}")
+		if [ "${filename:${#bname}}" = "${ex}" ]; then
+			echo -n "${bname}"
+			return 0
+		fi
+	done
+}
+
 # Which image should we use
 IPA_BASEURI="${IPA_BASEURI:-https://tarballs.opendev.org/openstack/ironic-python-agent/dib}"
 IPA_BRANCH="$(echo "${IPA_BRANCH:-master}" | tr / -)"
 IPA_FLAVOR="${IPA_FLAVOR:-centos9}"
 
 FILENAME="${IPA_FILENAME:-ipa-${IPA_FLAVOR}-${IPA_BRANCH}.tar.gz}"
-FILENAME_NO_EXT="${FILENAME%.*.*}"
+FILENAME_NO_EXT=$(get_filename_without_extension "${FILENAME}")
+FILENAME_NO_EXT="${FILENAME_NO_EXT:-${FILENAME%.*.*}}"
 DESTNAME="ironic-python-agent"
 
 mkdir -p "${SHARED_DIR}"/html/images "${SHARED_DIR}"/tmp
