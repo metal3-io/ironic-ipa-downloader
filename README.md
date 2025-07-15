@@ -16,6 +16,15 @@ environment variable.
 If the archive follows different naming conventions than the default, you can
 override the file names by specifying the `IPA_FILENAME` variable.
 
+You can specify the IPA image architecture by exporting the `IPA_ARCH` environment
+variable. Doing so will save the image as an architecture specific image.
+
+To have multiple images available for different architectures you should run
+this container multiple times as multiple initContainers with different
+configuration and set the `IPA_ARCH` variable to a different value each time, you
+will also need to set the `IPA_BASEURI` and `IPA_FLAVOR` to point to archives for
+the correct architecture as default URIs are for x86_64 only.
+
 ## How to build custom IPA ramdisk image
 
 To build custom IPA ramdisk image, follow the steps below. For more information
