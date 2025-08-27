@@ -42,10 +42,11 @@ get_filename_without_extension() {
 IPA_BASEURI="${IPA_BASEURI:-https://tarballs.opendev.org/openstack/ironic-python-agent/dib}"
 IPA_BRANCH="$(echo "${IPA_BRANCH:-master}" | tr / -)"
 IPA_FLAVOR="${IPA_FLAVOR:-centos9}"
+IPA_ARCH="${IPA_ARCH:-}"
 
 FILENAME="${IPA_FILENAME:-ipa-${IPA_FLAVOR}-${IPA_BRANCH}.tar.gz}"
 FILENAME_NO_EXT=$(get_filename_without_extension "${FILENAME}")
-DESTNAME="ironic-python-agent"
+DESTNAME="ironic-python-agent${IPA_ARCH:+_${IPA_ARCH}}"
 
 mkdir -p "${SHARED_DIR}"/html/images "${SHARED_DIR}"/tmp
 cd "${SHARED_DIR}"/html/images
