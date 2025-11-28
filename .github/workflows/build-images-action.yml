@@ -14,10 +14,14 @@ jobs:
   build_ipa_downloader:
     name: build ipa downloader image
     if: github.repository == 'metal3-io/ironic-ipa-downloader'
+    permissions:
+      contents: read
+      id-token: write
     uses: metal3-io/project-infra/.github/workflows/container-image-build.yml@main
     with:
       image-name: 'ironic-ipa-downloader'
       pushImage: true
+      generate-sbom: true
     secrets:
       QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
       QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
