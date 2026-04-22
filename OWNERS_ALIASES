@@ -2,13 +2,12 @@
 
 aliases:
   ironic-ipa-downloader-maintainers:
-  - derekhiggins
   - dtantsur
   - elfosardo
   - iurygregory
+  - Rozzii
+  - tuminoid
 
   ironic-ipa-downloader-reviewers:
   - lentzi90
-  - Rozzii
-  - tuminoid
   - zaneb
