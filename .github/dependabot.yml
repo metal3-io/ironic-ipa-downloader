@@ -20,7 +20,7 @@ updates:
   - dependency-name: "*"
     update-types: ["version-update:semver-major"]
   cooldown:
-    default-days: 7
+    default-days: 3
   commit-message:
     prefix: ":seedling:"
   labels:
