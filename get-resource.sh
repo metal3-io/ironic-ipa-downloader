@@ -53,6 +53,14 @@ cd "${SHARED_DIR}"/html/images
 
 TMPDIR="$(mktemp -d -p "${SHARED_DIR}"/tmp)"
 
+cleanup_tmpdir() {
+    if [ -n "${TMPDIR:-}" ] && [ -e "${TMPDIR}" ]; then
+        rm -rf "${TMPDIR}"
+    fi
+}
+
+trap cleanup_tmpdir EXIT
+
 # If we have a CACHEURL and nothing has yet been downloaded
 # get header info from the cache
 
@@ -82,6 +90,24 @@ else
 fi
 
 if [ -s "${FILENAME}" ]; then
+    # Fetch and verify SHA256 checksum
+    SHA256_FILENAME="${FILENAME}.sha256"
+    if curl_with_flags -g --fail -O "${IPA_BASEURI}/${SHA256_FILENAME}"; then
+        # Handle both formats: raw hash only, or "<hash>  <filename>"
+        if grep -q "  " "${SHA256_FILENAME}"; then
+            SHACHECK="${SHA256_FILENAME}"
+        else
+            SHACHECK="${SHA256_FILENAME}.formatted"
+            echo "$(cat "${SHA256_FILENAME}")  ${FILENAME}" > "${SHACHECK}"
+        fi
+        if ! sha256sum --check "${SHACHECK}"; then
+            echo "ERROR: SHA256 checksum verification failed for ${FILENAME}" >&2
+            exit 1
+        fi
+    else
+        echo "WARNING: SHA256 checksum file not available at ${IPA_BASEURI}/${SHA256_FILENAME}, skipping verification" >&2
+    fi
+
     tar -xaf "${FILENAME}"
 
     ETAG="$(awk '/ETag:/ {print $2}' "${FILENAME}.headers" | tr -d "\"\r")"
@@ -91,6 +117,4 @@ if [ -s "${FILENAME}" ]; then
     ln -sf "${FILENAME}-${ETAG}/${FILENAME}.headers" "${DESTNAME}.headers"
     ln -sf "${FILENAME}-${ETAG}/${FILENAME_NO_EXT}.initramfs" "${DESTNAME}.initramfs"
     ln -sf "${FILENAME}-${ETAG}/${FILENAME_NO_EXT}.kernel" "${DESTNAME}.kernel"
-else
-    rm -rf "${TMPDIR}"
 fi
