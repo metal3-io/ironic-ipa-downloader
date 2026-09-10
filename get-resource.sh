@@ -73,7 +73,7 @@ fi
 if [ -r "${DESTNAME}.headers" ] ; then
     ETAG="$(awk '/ETag:/ {print $2}' "${DESTNAME}.headers" | tr -d "\r")"
     cd "${TMPDIR}"
-    curl_with_flags -g --dump-header "${FILENAME}.headers" \
+    curl_with_flags -g --fail --dump-header "${FILENAME}.headers" \
         -O "${IPA_BASEURI}/${FILENAME}" \
         --header "If-None-Match: ${ETAG}" || cp "${SHARED_DIR}/html/images/${FILENAME}.headers" .
 
@@ -81,13 +81,14 @@ if [ -r "${DESTNAME}.headers" ] ; then
     # but we don't have it in the images directory
     # Its in the cache, go get it
     ETAG="$(awk '/ETag:/ {print $2}' "${FILENAME}.headers" | tr -d "\"\r")"
-    if [ ! -s "${FILENAME}" ] && [ ! -e "${SHARED_DIR}/html/images/${FILENAME_NO_EXT}-${ETAG}/${FILENAME}" ]; then
+    if [ -n "${CACHEURL:-}" ] && [ ! -s "${FILENAME}" ] &&
+       [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FILENAME}" ]; then
         mv "${SHARED_DIR}/html/images/${FILENAME}.headers" .
-        curl_with_flags -g -O "${CACHEURL}/${FILENAME_NO_EXT}-${ETAG}/${FILENAME}"
+        curl_with_flags -g --fail -O "${CACHEURL}/${FILENAME}-${ETAG}/${FILENAME}"
     fi
 else
     cd "${TMPDIR}"
-    curl_with_flags -g --dump-header "${FILENAME}.headers" -O "${IPA_BASEURI}/${FILENAME}"
+    curl_with_flags -g --fail --dump-header "${FILENAME}.headers" -O "${IPA_BASEURI}/${FILENAME}"
 fi
 
 if [ -s "${FILENAME}" ]; then
