@@ -16,7 +16,14 @@ curl_with_flags() {
         set -- --verbose "$@"
     fi
     if  [ "${CURL_INSECURE:-}" = true ]; then
-        set -- --insecure "$@"
+        set -- --insecure --proxy-insecure "$@"
+    fi
+    if [ -n "${WEBSERVER_CACERT_FILE:-}" ]; then
+        if [ ! -f "${WEBSERVER_CACERT_FILE}" ] || [ ! -r "${WEBSERVER_CACERT_FILE}" ]; then
+            echo "WEBSERVER_CACERT_FILE must point to a readable CA bundle file: ${WEBSERVER_CACERT_FILE}" >&2
+            return 2
+        fi
+        set -- --cacert "${WEBSERVER_CACERT_FILE}" --proxy-cacert "${WEBSERVER_CACERT_FILE}" "$@"
     fi
     curl "$@"
 }
