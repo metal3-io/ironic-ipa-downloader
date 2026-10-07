@@ -19,6 +19,11 @@ override the file names by specifying the `IPA_FILENAME` variable.
 You can specify the IPA image architecture by exporting the `IPA_ARCH` environment
 variable. Doing so will save the image as an architecture specific image.
 
+To configure a custom CA trust bundle for secure connections (e.g., when
+pulling from a custom HTTPS server or through an HTTPS proxy with a self-signed
+or private CA certificate), export the `WEBSERVER_CACERT_FILE` environment
+variable with the path (inside the container) to the certificate bundle.
+
 To have multiple images available for different architectures you should run
 this container multiple times as multiple initContainers with different
 configuration and set the `IPA_ARCH` variable to a different value each time, you

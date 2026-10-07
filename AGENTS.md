@@ -40,6 +40,8 @@ Key configuration (see `README.md` for full list):
 - `IPA_FLAVOR` - OS flavor (default: `centos9`)
 - `IPA_ARCH` - Architecture suffix for multi-arch support
 - `SHARED_DIR` - Output directory (default: `/shared`)
+- `WEBSERVER_CACERT_FILE` - Path to a custom CA trust bundle for secure
+  connections (and secure proxies)
 
 ## Code Review Guidelines
 
