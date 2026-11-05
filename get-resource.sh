@@ -11,7 +11,50 @@ export no_proxy="${no_proxy:-${NO_PROXY:-}}"
 # configurable variables
 SHARED_DIR="${SHARED_DIR:-/shared}"
 
+# Transfer resilience. A stalled or pathologically slow archive must fail fast
+# and visibly rather than hang the init container for hours: curl aborts when the
+# average transfer speed stays below CURL_SPEED_LIMIT bytes/s for CURL_SPEED_TIME
+# seconds, then retries CURL_RETRY times before giving up. Set CURL_SPEED_LIMIT=0
+# to disable the speed floor.
+CURL_CONNECT_TIMEOUT="${CURL_CONNECT_TIMEOUT:-30}"
+CURL_SPEED_LIMIT="${CURL_SPEED_LIMIT:-102400}"
+CURL_SPEED_TIME="${CURL_SPEED_TIME:-120}"
+CURL_RETRY="${CURL_RETRY:-3}"
+CURL_RETRY_DELAY="${CURL_RETRY_DELAY:-5}"
+
+# Validate the tunables before handing them to curl: they come from the
+# container environment and are interpolated into a command line.
+require_non_negative_int() {
+    local name="$1"
+    local value="$2"
+
+    case "${value}" in
+        '' | *[!0-9]*)
+            echo "${name} must be a non-negative integer, got: '${value}'" >&2
+            exit 2
+            ;;
+    esac
+}
+
+require_non_negative_int CURL_CONNECT_TIMEOUT "${CURL_CONNECT_TIMEOUT}"
+require_non_negative_int CURL_SPEED_LIMIT "${CURL_SPEED_LIMIT}"
+require_non_negative_int CURL_SPEED_TIME "${CURL_SPEED_TIME}"
+require_non_negative_int CURL_RETRY "${CURL_RETRY}"
+require_non_negative_int CURL_RETRY_DELAY "${CURL_RETRY_DELAY}"
+
 curl_with_flags() {
+    set -- --connect-timeout "${CURL_CONNECT_TIMEOUT}" \
+        --retry "${CURL_RETRY}" \
+        --retry-delay "${CURL_RETRY_DELAY}" \
+        --retry-connrefused \
+        "$@"
+
+    if [ "${CURL_SPEED_LIMIT}" -gt 0 ]; then
+        set -- --speed-limit "${CURL_SPEED_LIMIT}" \
+            --speed-time "${CURL_SPEED_TIME}" \
+            "$@"
+    fi
+
     if [ "${CURL_VERBOSE:-}" = true ]; then
         set -- --verbose "$@"
     fi
@@ -78,7 +121,7 @@ fi
 
 # Download the most recent version of IPA
 if [ -r "${DESTNAME}.headers" ] ; then
-    ETAG="$(awk '/ETag:/ {print $2}' "${DESTNAME}.headers" | tr -d "\r")"
+    ETAG="$(awk '/ETag:/ {etag=$2} END {print etag}' "${DESTNAME}.headers" | tr -d "\r")"
     cd "${TMPDIR}"
     curl_with_flags -g --fail --dump-header "${FILENAME}.headers" \
         -O "${IPA_BASEURI}/${FILENAME}" \
@@ -87,7 +130,10 @@ if [ -r "${DESTNAME}.headers" ] ; then
     # curl didn't download anything because we have the ETag already
     # but we don't have it in the images directory
     # Its in the cache, go get it
-    ETAG="$(awk '/ETag:/ {print $2}' "${FILENAME}.headers" | tr -d "\"\r")"
+    # NOTE: --dump-header appends the headers of every response in the
+    # invocation, so a retried download leaves more than one ETag in the file.
+    # Keep only the last one, which belongs to the response we actually used.
+    ETAG="$(awk '/ETag:/ {etag=$2} END {print etag}' "${FILENAME}.headers" | tr -d "\"\r")"
     if [ -n "${CACHEURL:-}" ] && [ ! -s "${FILENAME}" ] &&
        [ ! -e "${SHARED_DIR}/html/images/${FILENAME}-${ETAG}/${FILENAME}" ]; then
         mv "${SHARED_DIR}/html/images/${FILENAME}.headers" .
@@ -108,7 +154,7 @@ if [ -s "${FILENAME}" ]; then
 
     tar -xaf "${FILENAME}"
 
-    ETAG="$(awk '/ETag:/ {print $2}' "${FILENAME}.headers" | tr -d "\"\r")"
+    ETAG="$(awk '/ETag:/ {etag=$2} END {print etag}' "${FILENAME}.headers" | tr -d "\"\r")"
     cd -
     chmod 755 "${TMPDIR}"
     mv "${TMPDIR}" "${FILENAME}-${ETAG}"

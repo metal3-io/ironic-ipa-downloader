@@ -30,6 +30,25 @@ configuration and set the `IPA_ARCH` variable to a different value each time, yo
 will also need to set the `IPA_BASEURI` and `IPA_FLAVOR` to point to archives for
 the correct architecture as default URIs are for x86_64 only.
 
+### Transfer resilience
+
+The ramdisk is a large download (several hundred MB) and Ironic does not start
+until it completes, so a stalled or very slow archive would otherwise hang the
+init container indefinitely. The download therefore aborts when the average
+speed stays below a floor, and is retried a bounded number of times:
+
+| Variable                | Default  | Meaning                                              |
+| ----------------------- | -------- | ---------------------------------------------------- |
+| `CURL_CONNECT_TIMEOUT`  | `30`     | Connection timeout in seconds.                       |
+| `CURL_SPEED_LIMIT`      | `102400` | Minimum average bytes/s; `0` disables the floor.      |
+| `CURL_SPEED_TIME`       | `120`    | Seconds below the floor before aborting.             |
+| `CURL_RETRY`            | `3`      | Retry attempts for transient failures and aborts.    |
+| `CURL_RETRY_DELAY`      | `5`      | Seconds between retries.                             |
+
+With the defaults, an archive serving less than 100 KB/s fails within a few
+minutes with a clear error instead of appearing to hang. Raise
+`CURL_SPEED_TIME` or lower `CURL_SPEED_LIMIT` on genuinely slow links.
+
 ## How to build custom IPA ramdisk image
 
 To build custom IPA ramdisk image, follow the steps below. For more information
