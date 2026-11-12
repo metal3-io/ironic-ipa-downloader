@@ -10,6 +10,14 @@ export no_proxy="${no_proxy:-${NO_PROXY:-}}"
 
 # configurable variables
 SHARED_DIR="${SHARED_DIR:-/shared}"
+REQUIRE_SHA256="${REQUIRE_SHA256:-true}"
+case "${REQUIRE_SHA256}" in
+    true | false) ;;
+    *)
+        echo "REQUIRE_SHA256 must be true or false, got: '${REQUIRE_SHA256}'" >&2
+        exit 2
+        ;;
+esac
 
 # Transfer resilience. A stalled or pathologically slow archive must fail fast
 # and visibly rather than hang the init container for hours: curl aborts when the
@@ -149,6 +157,11 @@ if [ -s "${FILENAME}" ]; then
         # Archives publish either "hash  filename" or a bare hash; field 1 is the hash either way.
         awk -v f="${FILENAME}" '{print $1 "  " f; exit}' "${SHA256_FILENAME}" | sha256sum --check -
     else
+        if [ "${REQUIRE_SHA256}" = true ]; then
+            echo "ERROR: ${SHA256_FILENAME} not available at ${IPA_BASEURI}; refusing an unverified archive" >&2
+            echo "Set REQUIRE_SHA256=false only for a mirror you trust explicitly." >&2
+            exit 1
+        fi
         echo "WARNING: ${SHA256_FILENAME} not available at ${IPA_BASEURI}, skipping verification" >&2
     fi
 
