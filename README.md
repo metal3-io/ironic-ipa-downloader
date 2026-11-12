@@ -49,6 +49,13 @@ With the defaults, an archive serving less than 100 KB/s fails within a few
 minutes with a clear error instead of appearing to hang. Raise
 `CURL_SPEED_TIME` or lower `CURL_SPEED_LIMIT` on genuinely slow links.
 
+### Archive verification
+
+By default, a missing or inaccessible `.sha256` file aborts the download before
+the archive is unpacked. If a trusted mirror does not publish checksums, export
+`REQUIRE_SHA256=false` explicitly to keep the previous warning-only behavior.
+A checksum mismatch always aborts the download.
+
 ## How to build custom IPA ramdisk image
 
 To build custom IPA ramdisk image, follow the steps below. For more information

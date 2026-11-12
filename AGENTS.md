@@ -24,6 +24,7 @@ CI uses GitHub Actions (`.github/workflows/`). Run locally before PRs:
 |---------|---------|
 | `./hack/shellcheck.sh` | Shell script linting |
 | `./hack/markdownlint.sh` | Markdown linting |
+| `python3 -m unittest discover -s tests -v` | Downloader restart and checksum tests |
 
 Build with: `podman build -t ironic-ipa-downloader .`
 
@@ -40,6 +41,7 @@ Key configuration (see `README.md` for full list):
 - `IPA_FLAVOR` - OS flavor (default: `centos9`)
 - `IPA_ARCH` - Architecture suffix for multi-arch support
 - `SHARED_DIR` - Output directory (default: `/shared`)
+- `REQUIRE_SHA256` - Fail when the checksum is unavailable (default: `true`)
 - `WEBSERVER_CACERT_FILE` - Path to a custom CA trust bundle for secure
   connections (and secure proxies)
 
@@ -56,6 +58,7 @@ When reviewing pull requests:
 1. Read `README.md` for environment variables
 1. Make minimal edits to `get-resource.sh`
 1. Run `./hack/shellcheck.sh` before committing
+1. Run `python3 -m unittest discover -s tests -v` before committing
 1. Test download logic with `podman run`
 
 ## Integration
